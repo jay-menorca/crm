@@ -20,7 +20,8 @@ class CRM
   		puts "[3] Delete a contact"
   		puts "[4] Display all the contacts"
   		puts "[5] Display Contact Details" 
- 		puts "[6] Exit"
+ 		puts "[6] Display Contact(s) by Attribute"
+ 		puts "[7] Exit"
   		puts "\nEnter a number: "
 	end
 
@@ -39,6 +40,7 @@ class CRM
 			when 3 then displayDeleteContactsPage
 			when 4 then displayAllContactsPage
 			when 5 then displayContactDetailsPage
+			when 6 then displayContactsByAttribute
 			else 
 		end
 	end
@@ -88,6 +90,13 @@ class CRM
 		print value + ". Please enter the modified value: "
 		newVal = gets.chomp
 
+		print "\nDo you really wish to modify? (Y/N)\t\t: "
+  		goModify = gets.chomp.upcase
+
+  		if goModify!="Y"
+  			displayEditContactPage
+  		end
+
 		case attrib
 	  	when 1 then contact.firstName = newVal 	
 		when 2 then contact.lastName = newVal
@@ -105,10 +114,7 @@ class CRM
 
 		if (contact!="none")
 			displayContactDetail(contact)
-			puts "\n\n--- [1] First Name"
-			puts "--- [2] Last Name"
-			puts "--- [3] Email Address"
-			puts "--- [4] Note"
+			displayAttributeList
 
 			print "\nPlease enter the no. attribute [X] you wish to Modify: "
 	  		attrib = gets.chomp.to_i
@@ -178,6 +184,13 @@ class CRM
 		end
 	end
 
+	def displayAttributeList
+			puts "\n--- [1] First Name"
+			puts "--- [2] Last Name"
+			puts "--- [3] Email Address"
+			puts "--- [4] Note"
+	end
+
 	def displayContactDetail(contact)
 			puts "\nLast Name\t: #{contact.lastName}"
   			puts "First Name\t: #{contact.firstName}"
@@ -205,6 +218,36 @@ class CRM
   			gets
   			displayContactDetailsPage
   		end
+	end
+
+	def displayContacts(results)
+	 	i=1;
+		results.each do |a|
+			puts "[#{i}]  |  #{a.id}  | #{a.lastName}, #{a.firstName}"
+			i = i + 1;
+		end
+	end
+
+	def displayContactsByAttribute
+		JayCRMUtils::createHeader("Displaying contacts according to attribute")
+
+		displayAttributeList
+
+		print "\nPlease enter the no. attribute [X] you wish to use to retrieve contacts: "
+	  	attrib = gets.chomp.to_i
+	  	print "\nPlease enter the search value you wish to use to retrieve contacts: "
+	  	searchKey = gets.chomp.to_s
+
+	  	results = rolodex.getContactDetailsByAttribute(searchKey, attrib)
+
+	  	displayContacts(results)
+
+  		searchAgain = JayCRMUtils::createChoiceFooter("Contact(s) Returned.", "Search some more?")
+	  	if searchAgain=="Y"
+	  		displayContactsByAttribute
+	 	else
+	  		main_menu
+	  	end
 	end
 end
 
