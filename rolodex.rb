@@ -7,25 +7,24 @@ class Rolodex
 	end
 
 	def addContact(contact)
-		#contacts.push(contact)
 		@contacts << contact
+		@contacts.sort! 
 		@key += 1
 	end
 
-	def deleteContact(contact)
+	def deleteContact(x)
+		idx = x - 1
+		contacts.delete_at(idx)
 	end
 
-	def displayContactDetails(x)
-	end
-
-	def displayAllContacts
-		contactCount = contacts.length 
-
-		puts "\n#{contactCount} Contact(s) in the Rolodex\n\n"
-		i = 0
-		contacts.each do |a|
-			puts "[#{i}]  |  #{a.id}  | #{a.lastName}, #{a.givenName}"
-			i+=1
+	def getContactDetails(x)
+		idx = x - 1
+		if contacts[idx]==nil
+			return "none"
+		else
+			return contacts[idx]
 		end
 	end
+
+
 end

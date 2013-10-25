@@ -1,9 +1,15 @@
 class Contact
-	attr_accessor :id, :givenName, :lastName, :email, :note
+	attr_accessor :id, :firstName, :lastName, :email, :note, :displayId
 
-	def initialize(id, givenName, lastName, email, note)
+	@displayId
+
+	def <=>(contact)
+    	@lastName + @firstName <=> contact.lastName + contact.firstName
+  	end
+
+	def initialize(id, firstName, lastName, email, note)
 		@id = id
-		@givenName = givenName
+		@firstName = firstName
 		@lastName = lastName
 		@email = email
 		@note = note
