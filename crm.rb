@@ -34,8 +34,8 @@ class CRM
 
 	def call_option(selectedVal)
 		case selectedVal
-			when 1 then showAddContactsPage
-			when 2 then showEditContactPage
+			when 1 then displayAddContactsPage
+			when 2 then displayEditContactPage
 			when 3 then displayDeleteContactsPage
 			when 4 then displayAllContactsPage
 			when 5 then displayContactDetailsPage
@@ -45,7 +45,7 @@ class CRM
 
 
 	#TODO: add validation		
-	def showAddContactsPage
+	def displayAddContactsPage
 		JayCRMUtils::createHeader("Add A Contact")
 		print "Enter First Name\t: "
   		fName = gets.chomp
@@ -65,7 +65,7 @@ class CRM
   			
   			addAnother = JayCRMUtils::createChoiceFooter("Contact Added.", "Add Another?")
   			if addAnother=="Y"
-  				showAddContactsPage
+  				displayAddContactsPage
   			else
   				main_menu
   			end
@@ -74,7 +74,58 @@ class CRM
   		end
 	end
 
-	def showEditContactsPage
+	def doModify(contact, attrib)
+	  	strValue = "Current "
+	  	case attrib
+	  	when 1 then value = "first name is : " + contact.firstName 	
+		when 2 then value = "last name is : " + contact.lastName
+		when 3 then value = "email name is : " + contact.email
+		when 4 then value = "note is : " + contact.note
+		else
+			displayEditContactPage
+		end		
+
+		print value + ". Please enter the modified value: "
+		newVal = gets.chomp
+
+		case attrib
+	  	when 1 then contact.firstName = newVal 	
+		when 2 then contact.lastName = newVal
+		when 3 then contact.email = newVal
+		when 4 then contact.note = newVal
+		end		
+	end
+
+	def displayEditContactPage
+		JayCRMUtils::createHeader("Edit Contact Details")
+		displayAllContacts
+		print "\nPress the number [X] of the contact you want to modify: "
+		idx = gets.chomp.to_i
+		contact = rolodex.getContactDetails(idx)
+
+		if (contact!="none")
+			displayContactDetail(contact)
+			puts "\n\n--- [1] First Name"
+			puts "--- [2] Last Name"
+			puts "--- [3] Email Address"
+			puts "--- [4] Note"
+
+			print "\nPlease enter the no. attribute [X] you wish to Modify: "
+	  		attrib = gets.chomp.to_i
+
+	  		doModify(contact, attrib)
+
+  			modifyAgain = JayCRMUtils::createChoiceFooter("Contact Modified.", "Modify Another?")
+	  		if modifyAgain=="Y"
+	  			displayEditContactPage
+	 		else
+	  			main_menu
+	  		end
+	  	else
+  			puts "No contact details found for entered value."
+  			gets
+  			displayEditContactPage
+  		end
 	end
 
 	def displayDeleteContactsPage
@@ -127,6 +178,13 @@ class CRM
 		end
 	end
 
+	def displayContactDetail(contact)
+			puts "\nLast Name\t: #{contact.lastName}"
+  			puts "First Name\t: #{contact.firstName}"
+  			puts "Email Address\t: #{contact.email}"
+  			puts "Note\t\t: #{contact.note}"
+	end
+
 	def displayContactDetailsPage
 		JayCRMUtils::createHeader("Displaying Contact Details")
 		displayAllContacts
@@ -135,10 +193,7 @@ class CRM
 		contact = rolodex.getContactDetails(idx)
 
 		if (contact!="none")
-			puts "\nLast Name\t: #{contact.lastName}"
-  			puts "First Name\t: #{contact.firstName}"
-  			puts "Email Address\t: #{contact.email}"
-  			puts "Note\t\t: #{contact.note}"
+			displayContactDetail(contact)
   			displayAnother = JayCRMUtils::createChoiceFooter("Contact Displayed.", "Display Another?")
 	  		if displayAnother=="Y"
 	  			displayContactDetailsPage
