@@ -7,8 +7,10 @@ module JayCRMUtils
 	OPT3_HEADER = "Delete Contact Details"
 	OPT3_INSTRUCTION1 = "Press the number [X] of the contact you want to delete"
 
-	OPT4_HEADER =
-	OPT5_HEADER = 
+	OPT4_HEADER = "Displaying All Contacts"
+
+	OPT5_HEADER = "Displaying Contact Details"
+	OPT5_INSTRUCTION1 = "Press the number [X] of the contact you wish the details displayed"
 
 	OPT2_INSTRUCTION1 = "Press the number [X] of the contact you want to modify"
 	OPT2_INSTRUCTION2 = "Please enter the no. attribute [X] you wish to Modify"
@@ -31,7 +33,7 @@ module JayCRMUtils
 	end
 
 	def self.createChoiceFooter(resultStr, choiceStr)
-		puts "\n#{resultStr}\n\n-------------------------------------------\n"
+		puts "#{resultStr}\n\n-------------------------------------------\n"
   		print "#{choiceStr} (Y/N) :"
   		choice = JayUtils.getChar.upcase
   		return choice
@@ -58,12 +60,26 @@ module JayCRMUtils
   		return attrib
 	end
 
+	def self.displayAllContacts(contacts)				
+		contactsArr = contacts
+		contactCount = contactsArr.length 
+
+		puts "#{contactCount} Contact(s) in the Rolodex\n\n"
+		i = 1
+		contactsArr.each do |a|
+			puts "[#{i}]  |  #{a.id}  | #{a.lastName}, #{a.firstName}"
+			a.displayId = i;
+			i+=1
+		end
+	end
+
 #
 #
 #
 #
 # This method validates input for modifying and deletion of contacts
-	def self.displayInstructionGetInput(instructionStr, count)
+	def self.displayInstructionGetInput(instructionStr, count, contacts)
+		displayAllContacts(contacts)
 
 		if count < 1
 			print "No contacts. Press any key to return to main menu..."

@@ -13,6 +13,7 @@ class CRM
 	end
 
 	def main_menu
+		puts "\nInside Main()....\n"
 		choice = 1
 		while ((1..6) === choice) do
 			JayCRMUtils::createHeader("Jay's CRM")
@@ -25,9 +26,9 @@ class CRM
 	 		puts "[7] Exit"
 	  		print "\nEnter a number: "
 
-			choice = JayCRMUtils::getChoiceNum
+			selectedVal = JayCRMUtils::getChoiceNum
 			
-			case choice
+			case selectedVal
 				when 1 then displayAddContactsPage
 				when 2 then displayEditContactPage
 				when 3 then displayDeleteContactsPage
@@ -35,9 +36,10 @@ class CRM
 				when 5 then displayContactDetailsPage
 				when 6 then displayContactsByAttribute
 			else 
+				JayUtils::clearScreen				
 			end
 
-			#choice = selectedVal
+			choice = selectedVal
 		end
 		JayUtils::clearScreen
 	end
@@ -63,7 +65,7 @@ class CRM
   			aContact = Contact.new(rolodex.key, fName.capitalize, lName.upcase, email, note)
   			rolodex.addContact(aContact)
   			
-  			addAnother = JayCRMUtils::createChoiceFooter("Contact Added.", "Add Another?")
+  			addAnother = JayCRMUtils::createChoiceFooter("\nContact Added.", "Add Another?")
   			if addAnother=="Y"
   				displayAddContactsPage
   			else
@@ -92,7 +94,7 @@ class CRM
   		goModify = JayUtils::getChar.upcase
 
   		if goModify!="Y"
-  			displayEditContactPage
+  			return
   		end
 
 		case attrib
@@ -104,13 +106,11 @@ class CRM
 	end
 
 	def displayEditContactPage
-
 		JayCRMUtils::createHeader(JayCRMUtils::OPT2_HEADER)
-		displayAllContacts
 		count = rolodex.getContactCount
 
 		idx = JayCRMUtils::displayInstructionGetInput(
-			JayCRMUtils::OPT2_INSTRUCTION1, count)
+			JayCRMUtils::OPT2_INSTRUCTION1, count, rolodex.contacts)
 		if idx == 0 
 			return 
 		end
@@ -127,21 +127,20 @@ class CRM
 
   		doModify(contact, attrib)
 
-		modifyAgain = JayCRMUtils::createChoiceFooter("Contact Modified.", "Modify Another?")
+		modifyAgain = JayCRMUtils::createChoiceFooter("\nContact Modified.", "Modify Another?")
   		if modifyAgain=="Y"
   			displayEditContactPage
  		else
-  			main_menu
+  			return
   		end
 	end
 
 	def displayDeleteContactsPage
 		JayCRMUtils::createHeader(JayCRMUtils::OPT3_HEADER)
-		displayAllContacts 
 		count = rolodex.getContactCount
 
 		idx = JayCRMUtils::displayInstructionGetInput(
-			JayCRMUtils::OPT3_INSTRUCTION1, count)
+			JayCRMUtils::OPT3_INSTRUCTION1, count, rolodex.contacts)
 		if idx == 0 
 			return 
 		end
@@ -166,23 +165,10 @@ class CRM
 	end
 
 	def displayAllContactsPage
-		JayCRMUtils::createHeader("Displaying All Contacts")
-		displayAllContacts
+		JayCRMUtils::createHeader(JayCRMUtils::OPT4_HEADER)
+		JayCRMUtils::displayAllContacts(rolodex.contacts)
 		JayCRMUtils::createBackToMain
 		main_menu
-	end
-
-	def displayAllContacts				
-		contactsArr = rolodex.contacts
-		contactCount = contactsArr.length 
-
-		puts "#{contactCount} Contact(s) in the Rolodex\n\n"
-		i = 1
-		contactsArr.each do |a|
-			puts "[#{i}]  |  #{a.id}  | #{a.lastName}, #{a.firstName}"
-			a.displayId = i;
-			i+=1
-		end
 	end
 
 	def displayContactDetail(contact)
@@ -193,33 +179,24 @@ class CRM
 	end
 
 	def displayContactDetailsPage
-		JayCRMUtils::createHeader("Displaying Contact Details")
-		displayAllContacts
-		print "\nPress the number [X] of the contact you wish the details displayed: "
-		idx = gets.chomp.to_i
-		contact = rolodex.getContactDetails(idx)
+		JayCRMUtils::createHeader(JayCRMUtils::OPT5_HEADER)
 
-		if (contact!="none")
-			displayContactDetail(contact)
-  			displayAnother = JayCRMUtils::createChoiceFooter("Contact Displayed.", "Display Another?")
-	  		if displayAnother=="Y"
-	  			displayContactDetailsPage
-	 		else
-	  			main_menu
-	  		end
-  		else
-  			puts "No contact details found for entered value."
-  			gets
-  			displayContactDetailsPage
-  		end
-	end
+		count = rolodex.getContactCount
 
-	def displayContacts(results)
-	 	i=1;
-		results.each do |a|
-			puts "[#{i}]  |  #{a.id}  | #{a.lastName}, #{a.firstName}"
-			i = i + 1;
+		idx = JayCRMUtils::displayInstructionGetInput(
+			JayCRMUtils::OPT5_INSTRUCTION1, count, rolodex.contacts)
+		if idx == 0 
+			return 
 		end
+
+		contact = rolodex.getContactDetails(idx)
+		displayContactDetail(contact)
+		displayAnother = JayCRMUtils::createChoiceFooter("Contact Displayed.", "Display Another?")
+  		if displayAnother=="Y"
+  			displayContactDetailsPage
+ 		else
+  			return
+  		end
 	end
 
 	def displayContactsByAttribute
@@ -234,19 +211,24 @@ class CRM
 
 	  	results = rolodex.getContactDetailsByAttribute(searchKey, attrib)
 
-	  	displayContacts(results)
+	  	count = results.length
+		if count != 0
+	  		i=1;
+	  		print "\n"
+			results.each do |a|
+				puts "[#{i}]  |  #{a.id}  | #{a.lastName}, #{a.firstName}"
+				i = i + 1;
+			end
+			print "\n"
+	  	end
 
-  		searchAgain = JayCRMUtils::createChoiceFooter("Contact(s) Returned.", "Search some more?")
+  		searchAgain = JayCRMUtils::createChoiceFooter(count.to_s + " Contact(s) Returned.", "Search some more?")
 	  	if searchAgain=="Y"
 	  		displayContactsByAttribute
 	 	else
-	  		main_menu
+	  		return
 	  	end
 	end
-
-
-
-
 end
 
 rolodex = Rolodex.new()
