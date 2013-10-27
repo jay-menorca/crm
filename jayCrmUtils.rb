@@ -2,7 +2,7 @@
 require_relative 'jayUtils.rb'
 
 module JayCRMUtils
-	OPT1_HEADER = 
+	OPT1_HEADER = "Add A Contact"
 	
 	OPT3_HEADER = "Delete Contact Details"
 	OPT3_INSTRUCTION1 = "Press the number [X] of the contact you want to delete"

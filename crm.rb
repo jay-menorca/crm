@@ -47,7 +47,7 @@ class CRM
 
 	#TODO: add validation		
 	def displayAddContactsPage
-		JayCRMUtils::createHeader("Add A Contact")
+		JayCRMUtils::createHeader(JayCRMUtils::OPT1_HEADER)
 		print "Enter First Name\t: "
   		fName = gets.chomp
   		print "Enter Last Name\t\t: "
