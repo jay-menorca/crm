@@ -17,6 +17,10 @@ class Rolodex
 		contacts.delete_at(idx)
 	end
 
+	def getContactCount
+		return contacts.length;
+	end
+
 	def getContactDetails(x)
 		idx = x - 1
 		if contacts[idx]==nil

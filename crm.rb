@@ -12,37 +12,34 @@ class CRM
 		@rolodex = rolodex
 	end
 
-
-	def print_main_menu
-		JayCRMUtils::createHeader("Jay's CRM")
-		puts "[1] Add a new contact"
-  		puts "[2] Modify an existing contact"
-  		puts "[3] Delete a contact"
-  		puts "[4] Display all the contacts"
-  		puts "[5] Display Contact Details" 
- 		puts "[6] Display Contact(s) by Attribute"
- 		puts "[7] Exit"
-  		puts "\nEnter a number: "
-	end
-
 	def main_menu
-		print_main_menu
-		user_selected = gets.to_i
-		call_option(user_selected)
-	end
+		choice = 1
+		while ((1..6) === choice) do
+			JayCRMUtils::createHeader("Jay's CRM")
+			puts "[1] Add a new contact"
+	  		puts "[2] Modify an existing contact"
+	  		puts "[3] Delete a contact"
+	  		puts "[4] Display all the contacts"
+	  		puts "[5] Display Contact Details" 
+	 		puts "[6] Display Contact(s) by Attribute"
+	 		puts "[7] Exit"
+	  		print "\nEnter a number: "
 
-	
-
-	def call_option(selectedVal)
-		case selectedVal
-			when 1 then displayAddContactsPage
-			when 2 then displayEditContactPage
-			when 3 then displayDeleteContactsPage
-			when 4 then displayAllContactsPage
-			when 5 then displayContactDetailsPage
-			when 6 then displayContactsByAttribute
+			choice = JayCRMUtils::getChoiceNum
+			
+			case choice
+				when 1 then displayAddContactsPage
+				when 2 then displayEditContactPage
+				when 3 then displayDeleteContactsPage
+				when 4 then displayAllContactsPage
+				when 5 then displayContactDetailsPage
+				when 6 then displayContactsByAttribute
 			else 
+			end
+
+			#choice = selectedVal
 		end
+		JayUtils::clearScreen
 	end
 
 
@@ -59,7 +56,8 @@ class CRM
   		note = gets.chomp
 
   		print "\nCreate? (Y/N)\t\t: "
-  		goCreate = gets.chomp.upcase
+  		goCreate = JayUtils.getChar.upcase
+  		print "#{goCreate}"
 
   		if goCreate=="Y"
   			aContact = Contact.new(rolodex.key, fName.capitalize, lName.upcase, email, note)
@@ -81,87 +79,89 @@ class CRM
 	  	case attrib
 	  	when 1 then value = "first name is : " + contact.firstName 	
 		when 2 then value = "last name is : " + contact.lastName
-		when 3 then value = "email name is : " + contact.email
+		when 3 then value = "email is : " + contact.email
 		when 4 then value = "note is : " + contact.note
 		else
-			displayEditContactPage
+			return
 		end		
 
-		print value + ". Please enter the modified value: "
+		puts "\nCurrent " + value + ". Please enter the modified value: "
 		newVal = gets.chomp
 
-		print "\nDo you really wish to modify? (Y/N)\t\t: "
-  		goModify = gets.chomp.upcase
+		print "\nDo you really wish to modify? (Y/N): "
+  		goModify = JayUtils::getChar.upcase
 
   		if goModify!="Y"
   			displayEditContactPage
   		end
 
 		case attrib
-	  	when 1 then contact.firstName = newVal 	
-		when 2 then contact.lastName = newVal
+	  	when 1 then contact.firstName = newVal.capitalize
+		when 2 then contact.lastName = newVal.upcase
 		when 3 then contact.email = newVal
 		when 4 then contact.note = newVal
 		end		
 	end
 
 	def displayEditContactPage
-		JayCRMUtils::createHeader("Edit Contact Details")
+
+		JayCRMUtils::createHeader(JayCRMUtils::OPT2_HEADER)
 		displayAllContacts
-		print "\nPress the number [X] of the contact you want to modify: "
-		idx = gets.chomp.to_i
+		count = rolodex.getContactCount
+
+		idx = JayCRMUtils::displayInstructionGetInput(
+			JayCRMUtils::OPT2_INSTRUCTION1, count)
+		if idx == 0 
+			return 
+		end
+
 		contact = rolodex.getContactDetails(idx)
 
-		if (contact!="none")
-			displayContactDetail(contact)
-			puts ""
-			displayAttributeList
+		displayContactDetail(contact)
+		puts ""
 
-			print "\nPlease enter the no. attribute [X] you wish to Modify: "
-	  		attrib = gets.chomp.to_i
+		attrib = JayCRMUtils::displayAttribAndGetInput(JayCRMUtils::OPT2_INSTRUCTION2)
+  		if attrib == 0 
+			return 
+		end
 
-	  		doModify(contact, attrib)
+  		doModify(contact, attrib)
 
-  			modifyAgain = JayCRMUtils::createChoiceFooter("Contact Modified.", "Modify Another?")
-	  		if modifyAgain=="Y"
-	  			displayEditContactPage
-	 		else
-	  			main_menu
-	  		end
-	  	else
-  			puts "No contact details found for entered value."
-  			gets
+		modifyAgain = JayCRMUtils::createChoiceFooter("Contact Modified.", "Modify Another?")
+  		if modifyAgain=="Y"
   			displayEditContactPage
+ 		else
+  			main_menu
   		end
 	end
 
 	def displayDeleteContactsPage
-		JayCRMUtils::createHeader("Delete Contact Details")
+		JayCRMUtils::createHeader(JayCRMUtils::OPT3_HEADER)
 		displayAllContacts 
-		print "\nPress the number [X] of the contact you want to delete: "
-		idx = gets.chomp.to_i
+		count = rolodex.getContactCount
+
+		idx = JayCRMUtils::displayInstructionGetInput(
+			JayCRMUtils::OPT3_INSTRUCTION1, count)
+		if idx == 0 
+			return 
+		end
+
 		contact = rolodex.getContactDetails(idx)
 
-		if (contact!="none")
-			print "\nDo you really wish to delete? (Y/N)\t\t: "
-	  		goDelete = gets.chomp.upcase
+		print "\nDo you really wish to delete? (Y/N)\t\t: "
+  		goDelete = gets.chomp.upcase
 
-	  		if goDelete=="Y"
-	  			rolodex.deleteContact(idx)
+  		if goDelete=="Y"
+  			rolodex.deleteContact(idx)
 
-	  			deleteAnother = JayCRMUtils::createChoiceFooter("Contact Deleted.", "Delete Another?")
-		  		if deleteAnother=="Y"
-		  			displayDeleteContactsPage
-		 		else
-		  			main_menu
-		  		end
-	  		else
-	  			main_menu
+  			deleteAnother = JayCRMUtils::createChoiceFooter("Contact Deleted.", "Delete Another?")
+	  		if deleteAnother=="Y"
+	  			displayDeleteContactsPage
+	 		else
+	  			return
 	  		end
-	  	else
-  			puts "No contact details found for entered value."
-  			gets
-  			displayDeleteContactsPage
+  		else
+  			return
   		end
 	end
 
@@ -183,13 +183,6 @@ class CRM
 			a.displayId = i;
 			i+=1
 		end
-	end
-
-	def displayAttributeList
-			puts "--- [1] First Name"
-			puts "--- [2] Last Name"
-			puts "--- [3] Email Address"
-			puts "--- [4] Note"
 	end
 
 	def displayContactDetail(contact)
@@ -230,13 +223,13 @@ class CRM
 	end
 
 	def displayContactsByAttribute
-		JayCRMUtils::createHeader("Displaying contacts according to attribute")
+		JayCRMUtils::createHeader(JayCRMUtils::OPT6_HEADER)
+		attrib = JayCRMUtils::displayAttribAndGetInput(JayCRMUtils::OPT6_INSTRUCTION1)
+		if attrib == 0 
+			return 
+		end
 
-		displayAttributeList
-
-		print "\nPlease enter the no. attribute [X] you wish to use to retrieve contacts: "
-	  	attrib = gets.chomp.to_i
-	  	print "\nPlease enter the search value you wish to use to retrieve contacts: "
+	  	print "\n#{JayCRMUtils::OPT6_INSTRUCTION2}"
 	  	searchKey = gets.chomp.to_s
 
 	  	results = rolodex.getContactDetailsByAttribute(searchKey, attrib)
@@ -250,6 +243,10 @@ class CRM
 	  		main_menu
 	  	end
 	end
+
+
+
+
 end
 
 rolodex = Rolodex.new()

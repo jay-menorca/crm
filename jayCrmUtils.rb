@@ -2,6 +2,22 @@
 require_relative 'jayUtils.rb'
 
 module JayCRMUtils
+	OPT1_HEADER = 
+	
+	OPT3_HEADER = "Delete Contact Details"
+	OPT3_INSTRUCTION1 = "Press the number [X] of the contact you want to delete"
+
+	OPT4_HEADER =
+	OPT5_HEADER = 
+
+	OPT2_INSTRUCTION1 = "Press the number [X] of the contact you want to modify"
+	OPT2_INSTRUCTION2 = "Please enter the no. attribute [X] you wish to Modify"
+	OPT2_HEADER = "Edit Contact Details"
+
+	OPT6_HEADER = "Displaying Contacts by Attribute"
+	OPT6_INSTRUCTION1 = "Please enter the no. attribute [X] you wish to use to retrieve contacts"
+	OPT6_INSTRUCTION2 = "Please enter the search value you wish to use to retrieve contacts: "
+
 	def self.createHeader(headerString)
 		JayUtils::clearScreen
 		puts "-------------------------------------------\n"
@@ -17,8 +33,59 @@ module JayCRMUtils
 	def self.createChoiceFooter(resultStr, choiceStr)
 		puts "\n#{resultStr}\n\n-------------------------------------------\n"
   		print "#{choiceStr} (Y/N) :"
-  		choice = gets.chomp.upcase
-  		
+  		choice = JayUtils.getChar.upcase
   		return choice
+	end
+
+	def self.getChoiceNum
+		selectedVal = (JayUtils::getChar).to_i
+		return selectedVal 
+	end
+
+	def self.displayAttribAndGetInput(questionStr)
+		displayAttributeList
+
+		print "\n" + questionStr + ": "
+  		attrib = JayCRMUtils::getChoiceNum
+		print attrib
+  		
+  		if (attrib > 4 || attrib == 0)
+  			print "\nInvalid Input Entered..."
+  			JayUtils::getChar
+  			return 0
+  		end
+  		
+  		return attrib
+	end
+
+#
+#
+#
+#
+# This method validates input for modifying and deletion of contacts
+	def self.displayInstructionGetInput(instructionStr, count)
+
+		if count < 1
+			print "No contacts. Press any key to return to main menu..."
+			JayUtils::getChar
+			return 0 
+		end
+
+		print "\n#{instructionStr}: "
+		idx = gets.chomp.to_i
+
+		if (idx > count || idx == 0)
+			print "Entered Number is not in the Contacts List. Press any key to go back to main..."
+			JayUtils::getChar
+			return 0
+		end
+		return idx
+	end
+
+	def self.displayAttributeList
+		puts "--- [1] First Name"
+		puts "--- [2] Last Name"
+		puts "--- [3] Email Address"
+		puts "--- [4] Note"
 	end
 end
