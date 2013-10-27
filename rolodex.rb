@@ -38,39 +38,44 @@ class Rolodex
 	end
 
 	def searchContactsByFirstName(key)
+		key = key.capitalize
 		results = Array.new
 		contacts.each do |a|
-			if a.firstName.include? mKey
+			if a.firstName.include? key
 				results << a
 			end
 		end
+		return results
 	end
 
 	def searchContactsByLastName(key)
-		mKey = key.to_s.upcase
+		key = key.upcase
 		results = Array.new
 		contacts.each do |a|
-			if a.lastName.include? mKey
+			if a.lastName.include? key
 				results << a
 			end
 		end
+		return results
 	end
 
 	def searchContactsByEmail(key)
 		results = Array.new
 		contacts.each do |a|
-			if a.email.include? mKey
+			if a.email.include? key
 				results << a
 			end
 		end
+		return results
 	end
 
 	def searchContactsByNote(key)
 		results = Array.new
 		contacts.each do |a|
-			if a.note.include? mKey
+			if a.note.include? key
 				results << a
 			end
 		end
+		return results
 	end
 end
