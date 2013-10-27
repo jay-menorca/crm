@@ -114,6 +114,7 @@ class CRM
 
 		if (contact!="none")
 			displayContactDetail(contact)
+			puts ""
 			displayAttributeList
 
 			print "\nPlease enter the no. attribute [X] you wish to Modify: "
@@ -185,7 +186,7 @@ class CRM
 	end
 
 	def displayAttributeList
-			puts "\n--- [1] First Name"
+			puts "--- [1] First Name"
 			puts "--- [2] Last Name"
 			puts "--- [3] Email Address"
 			puts "--- [4] Note"

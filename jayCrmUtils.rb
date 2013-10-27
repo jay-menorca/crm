@@ -16,7 +16,7 @@ module JayCRMUtils
 
 	def self.createChoiceFooter(resultStr, choiceStr)
 		puts "\n#{resultStr}\n\n-------------------------------------------\n"
-  		puts "#{choiceStr} (Y/N) :"
+  		print "#{choiceStr} (Y/N) :"
   		choice = gets.chomp.upcase
   		
   		return choice
