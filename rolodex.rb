@@ -1,3 +1,5 @@
+require_relative 'jayCrmUtils.rb'
+
 class Rolodex
 	attr_accessor :contacts, :key
 
@@ -31,17 +33,22 @@ class Rolodex
 	end
 
 	def getContactDetailsByAttribute(searchKey, attrib)
+		
+		searchStrategy = SearchStrategy.new
+
 		case attrib
-		when 1 then results = searchContactsByFirstName(searchKey)
-		when 2 then results = searchContactsByLastName(searchKey)
-		when 3 then results = searchContactsByEmail(searchKey)
-		when 4 then results = searchContactsByNote(searchKey)
+		when 1 then searchStrategy = FirstNameSearch.new 
+		when 2 then searchStrategy = LastNameSearch.new
+		when 3 then searchStrategy = EmailSearch.new
+		when 4 then searchStrategy = NotesSearch.new
 		end
+
+		results = searchStrategy.search(searchKey, contacts)
 
 		return results
 	end
-
-	def searchContactsByFirstName(key)
+=begin
+	def search(key)
 		key = key.capitalize
 		results = Array.new
 		contacts.each do |a|
@@ -82,4 +89,5 @@ class Rolodex
 		end
 		return results
 	end
+=end
 end

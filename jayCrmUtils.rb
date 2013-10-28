@@ -1,6 +1,61 @@
 
 require_relative 'jayUtils.rb'
 
+class SearchStrategy
+	def search(key, contacts)
+	end
+end
+
+class FirstNameSearch < SearchStrategy
+	def search(key, contacts)
+		key = key.capitalize
+		results = Array.new
+		contacts.each do |a|
+			if a.firstName.include? key
+				results << a
+			end
+		end
+		return results
+	end
+end
+
+class LastNameSearch < SearchStrategy
+	def search(key, contacts)
+		key = key.upcase
+		results = Array.new
+		contacts.each do |a|
+			if a.lastName.include? key
+				results << a
+			end
+		end
+		return results
+	end
+end
+
+class EmailSearch < SearchStrategy
+	def search(key, contacts)
+		results = Array.new
+		contacts.each do |a|
+			if a.email.include? key
+				results << a
+			end
+		end
+		return results
+	end
+end
+
+class NotesSearch < SearchStrategy
+	def search(key, contacts)
+		results = Array.new
+		contacts.each do |a|
+			if a.note.include? key
+				results << a
+			end
+		end
+		return results
+	end
+end
+
 module JayCRMUtils
 	OPT1_HEADER = "Add A Contact"
 	
