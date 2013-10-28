@@ -47,47 +47,4 @@ class Rolodex
 
 		return results
 	end
-=begin
-	def search(key)
-		key = key.capitalize
-		results = Array.new
-		contacts.each do |a|
-			if a.firstName.include? key
-				results << a
-			end
-		end
-		return results
-	end
-
-	def searchContactsByLastName(key)
-		key = key.upcase
-		results = Array.new
-		contacts.each do |a|
-			if a.lastName.include? key
-				results << a
-			end
-		end
-		return results
-	end
-
-	def searchContactsByEmail(key)
-		results = Array.new
-		contacts.each do |a|
-			if a.email.include? key
-				results << a
-			end
-		end
-		return results
-	end
-
-	def searchContactsByNote(key)
-		results = Array.new
-		contacts.each do |a|
-			if a.note.include? key
-				results << a
-			end
-		end
-		return results
-	end
-=end
 end
